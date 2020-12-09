@@ -3,8 +3,8 @@ import { db } from "../db";
 import { UserModel, UserModelViewAttributes } from "./UserModel";
 
 interface ToastModelAttributes {
-  id: string;
-  userId: string;
+  id: number;
+  userId: number;
   title: string;
   description: string;
 }

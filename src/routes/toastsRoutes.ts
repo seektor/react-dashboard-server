@@ -6,7 +6,7 @@ import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 const ToastsRouter = express.Router();
 
 interface Toast {
-  id?: string;
+  id?: number;
   title?: string;
   description?: string;
 }

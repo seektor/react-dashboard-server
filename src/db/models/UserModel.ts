@@ -2,7 +2,7 @@ import * as Sequelize from "sequelize";
 import { db } from "../db";
 
 interface UserModelAttributes {
-  id: string;
+  id: number;
   userName: string;
   password: string;
 }

@@ -3,9 +3,9 @@ import { db } from "../db";
 import { UserModel, UserModelViewAttributes } from "./UserModel";
 
 interface TokenModelAttributes {
-  id: string;
+  id: number;
   accessToken: string;
-  userId: string;
+  userId: number;
 }
 
 type TokenModelCreationAttributes = Omit<TokenModelAttributes, "id">;

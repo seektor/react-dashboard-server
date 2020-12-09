@@ -1,12 +1,16 @@
+import * as Sequelize from "sequelize";
+import { db } from "../db";
+import { CountryModel } from "./CountryModel";
+import { RegionModel } from "./RegionModel";
+
 interface SaleModelAttributes {
-  id: string;
-  regionId: string;
-  countryId: string;
+  id: number;
+  regionId: number;
+  countryId: number;
   itemType: string;
   salesChannel: string;
   orderPriority: string;
   orderDate: string;
-  orderId: number;
   shipDate: string;
   unitsSold: number;
   unitPrice: number;
@@ -16,39 +20,48 @@ interface SaleModelAttributes {
   totalProfit: number;
 }
 
-// type ToastModelCreationAttributes = Omit<ToastModalAttributes, "id" | "userId">;
+type SaleModelCreationAttributes = Omit<SaleModelAttributes, "id">;
 
-// export type ToastModelViewAttributes = Omit<ToastModalAttributes, "userId">;
+export type SaleModelViewAttributes = SaleModelAttributes;
 
-// interface ToastModelInstance
-//   extends Sequelize.Model<ToastModalAttributes, ToastModelCreationAttributes>,
-//     ToastModalAttributes {
-//   user?: UserModelViewAttributes;
-// }
+interface SaleModelInstance
+  extends Sequelize.Model<SaleModelAttributes, SaleModelCreationAttributes>,
+  SaleModelAttributes {}
 
-// export const ToastModel = db.define<ToastModelInstance>("toast", {
-//   id: {
-//     type: Sequelize.UUID,
-//     autoIncrement: true,
-//     primaryKey: true,
-//   },
-//   userId: {
-//     type: Sequelize.UUID,
-//     field: "user_id",
-//     references: {
-//       key: "id",
-//       model: UserModel,
-//     },
-//   },
-//   title: {
-//     type: Sequelize.STRING,
-//     field: "title",
-//   },
-//   description: {
-//     type: Sequelize.STRING,
-//     field: "description",
-//   },
-// });
+export const SaleModel = db.define<SaleModelInstance>("sale", {
+  id: {
+    type: Sequelize.UUID,
+    autoIncrement: true,
+    primaryKey: true,
+  },
+  regionId: {
+    type: Sequelize.UUID,
+    field: "region_id",
+    references: {
+      key: "id",
+      model: RegionModel,
+    },
+  },
+  countryId: {
+    type: Sequelize.UUID,
+    field: "country_id",
+    references: {
+      key: "id",
+      model: CountryModel,
+    },
+  },
+  itemType: Sequelize.STRING,
+  salesChannel: Sequelize.STRING,
+  orderPriority: Sequelize.CHAR,
+  orderDate: Sequelize.STRING,
+  shipDate: Sequelize.STRING,
+  unitsSold: Sequelize.NUMBER,
+  unitPrice: Sequelize.NUMBER,
+  unitCost: Sequelize.NUMBER,
+  totalRevenue: Sequelize.NUMBER,
+  totalCost: Sequelize.NUMBER,
+  totalProfit: Sequelize.NUMBER,
+});
 
 // ToastModel.belongsTo(UserModel, { foreignKey: "userId" });
 
