@@ -1,7 +1,7 @@
 import * as Sequelize from "sequelize";
 import { db } from "../db";
-import { CountryModel } from "./CountryModel";
-import { RegionModel } from "./RegionModel";
+import { CountryModel, CountryModelViewAttributes } from "./CountryModel";
+import { RegionModel, RegionModelViewAttributes } from "./RegionModel";
 
 interface SaleModelAttributes {
   id: number;
@@ -22,11 +22,14 @@ interface SaleModelAttributes {
 
 type SaleModelCreationAttributes = Omit<SaleModelAttributes, "id">;
 
-export type SaleModelViewAttributes = SaleModelAttributes;
+export type SaleModelViewAttributes = Omit<SaleModelAttributes, "id"> & {
+  region: RegionModelViewAttributes;
+  country: CountryModelViewAttributes;
+};
 
 interface SaleModelInstance
   extends Sequelize.Model<SaleModelAttributes, SaleModelCreationAttributes>,
-  SaleModelAttributes {}
+    SaleModelAttributes {}
 
 export const SaleModel = db.define<SaleModelInstance>("sale", {
   id: {
@@ -63,8 +66,5 @@ export const SaleModel = db.define<SaleModelInstance>("sale", {
   totalProfit: Sequelize.NUMBER,
 });
 
-// ToastModel.belongsTo(UserModel, { foreignKey: "userId" });
-
-// export type ToastModelViewAttributesWithUser = ToastModelViewAttributes & {
-//   user: UserModelViewAttributes[];
-// };
+SaleModel.belongsTo(RegionModel, { foreignKey: "region_id" });
+SaleModel.belongsTo(CountryModel, { foreignKey: "country_id" });

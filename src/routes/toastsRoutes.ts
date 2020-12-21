@@ -11,6 +11,31 @@ interface Toast {
   description?: string;
 }
 
+type ToastGetRequest = Request<
+  Record<string, unknown>,
+  Record<string, unknown>,
+  Record<string, unknown>
+> &
+  AuthenticatedRequest;
+type ToastGetResponse = Response<{ toasts?: Toast[] } & { error?: string }>;
+
+ToastsRouter.get(
+  "/toasts",
+  authMiddleware,
+  async (req: ToastGetRequest, res: ToastGetResponse) => {
+    try {
+      const { user } = req.body;
+      const toasts = await ToastModel.findAll({ where: { userId: user.id } });
+      return res.status(201).send({ toasts });
+    } catch (error) {
+      return res.status(400).send({
+        error:
+          error.message || "Error while getting Toasts... Try again later.",
+      });
+    }
+  }
+);
+
 type ToastCreateRequest = Request<
   Record<string, unknown>,
   Record<string, unknown>,
@@ -33,42 +58,15 @@ ToastsRouter.post(
         description,
         title,
       });
-      return res
-        .status(201)
-        .send({
-          description: newToast.description,
-          id: newToast.id,
-          title: newToast.title,
-        });
+      return res.status(201).send({
+        description: newToast.description,
+        id: newToast.id,
+        title: newToast.title,
+      });
     } catch (error) {
       return res.status(400).send({
         error:
           error.message || "Error while creating Toast... Try again later.",
-      });
-    }
-  }
-);
-
-type ToastGetRequest = Request<
-  Record<string, unknown>,
-  Record<string, unknown>,
-  Record<string, unknown>
-> &
-  AuthenticatedRequest;
-type ToastGetResponse = Response<{ toasts?: Toast[] } & { error?: string }>;
-
-ToastsRouter.get(
-  "/toasts",
-  authMiddleware,
-  async (req: ToastGetRequest, res: ToastGetResponse) => {
-    try {
-      const { user } = req.body;
-      const toasts = await ToastModel.findAll({ where: { userId: user.id } });
-      return res.status(201).send({ toasts });
-    } catch (error) {
-      return res.status(400).send({
-        error:
-          error.message || "Error while getting Toasts... Try again later.",
       });
     }
   }

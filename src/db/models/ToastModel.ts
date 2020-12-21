@@ -44,7 +44,3 @@ export const ToastModel = db.define<ToastModelInstance>("toast", {
 });
 
 ToastModel.belongsTo(UserModel, { foreignKey: "userId" });
-
-export type ToastModelViewAttributesWithUser = ToastModelViewAttributes & {
-  user: UserModelViewAttributes[];
-};

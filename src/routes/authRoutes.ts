@@ -2,9 +2,9 @@ import bcrypt from "bcryptjs";
 import express, { Request, Response } from "express";
 import { TokenModel } from "../db/models/TokenModel";
 import { UserModel, UserModelViewAttributes } from "../db/models/UserModel";
-import { authMiddleware } from "../middlewares/authMiddleware";
+import authMiddleware from "../middlewares/authMiddleware";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
-import { generateAuthToken, validateUser } from "../utils/auth_utils";
+import { generateAuthToken, validateUser } from "../utils/auth.utils";
 
 const AuthRouter = express.Router();
 

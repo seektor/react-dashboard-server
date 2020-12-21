@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { APP_CONFIG } from "../appConfig";
 import { UserModel, UserModelViewAttributes } from "../db/models/UserModel";
+import { APP_CONFIG } from "../types/appConfig";
 
 export const validateUser = async (
   userName: string,
