@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-import { APP_CONFIG } from "../types/appConfig";
+import { APP_CONFIG } from "../appConfig";
 
 export const db = new Sequelize(APP_CONFIG.POSTGRES_DATABASE, {
   username: APP_CONFIG.POSTGRES_USER,

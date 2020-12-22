@@ -1,8 +1,8 @@
 import { NextFunction, Response } from "express";
 import jwt from "jsonwebtoken";
+import { APP_CONFIG } from "../appConfig";
 import { TokenModel } from "../db/models/TokenModel";
 import { UserModel } from "../db/models/UserModel";
-import { APP_CONFIG } from "../types/appConfig";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 import { JWTPayload } from "../types/JWTPayload";
 

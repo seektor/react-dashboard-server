@@ -10,6 +10,7 @@ const errorMiddleware = (
 ): void => {
   const statusCode = error.statusCode || 500;
   const message = error.message || "Unhandled error";
+  console.error("ERROR: ", message);
   response.status(statusCode).send({
     statusCode,
     message,

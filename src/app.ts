@@ -1,10 +1,10 @@
 import cors from "cors";
 import express from "express";
+import { APP_CONFIG } from "./appConfig";
 import { db } from "./db/db";
 import errorMiddleware from "./middlewares/errorMiddleware";
 import AuthRouter from "./routes/authRoutes";
 import SalesRouter from "./routes/salesRoutes";
-import { APP_CONFIG } from "./types/appConfig";
 
 class App {
   public app: express.Application;

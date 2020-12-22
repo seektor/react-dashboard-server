@@ -1,9 +1,9 @@
 import * as Sequelize from "sequelize";
 import { db } from "../db";
-import { CountryModel, CountryModelViewAttributes } from "./CountryModel";
-import { RegionModel, RegionModelViewAttributes } from "./RegionModel";
+import { CountryModel } from "./CountryModel";
+import { RegionModel } from "./RegionModel";
 
-interface SaleModelAttributes {
+export interface SaleModelAttributes {
   id: number;
   regionId: number;
   countryId: number;
@@ -22,12 +22,7 @@ interface SaleModelAttributes {
 
 type SaleModelCreationAttributes = Omit<SaleModelAttributes, "id">;
 
-export type SaleModelViewAttributes = Omit<SaleModelAttributes, "id"> & {
-  region: RegionModelViewAttributes;
-  country: CountryModelViewAttributes;
-};
-
-interface SaleModelInstance
+export interface SaleModelInstance
   extends Sequelize.Model<SaleModelAttributes, SaleModelCreationAttributes>,
     SaleModelAttributes {}
 
@@ -53,18 +48,51 @@ export const SaleModel = db.define<SaleModelInstance>("sale", {
       model: CountryModel,
     },
   },
-  itemType: Sequelize.STRING,
-  salesChannel: Sequelize.STRING,
-  orderPriority: Sequelize.CHAR,
-  orderDate: Sequelize.STRING,
-  shipDate: Sequelize.STRING,
-  unitsSold: Sequelize.NUMBER,
-  unitPrice: Sequelize.NUMBER,
-  unitCost: Sequelize.NUMBER,
-  totalRevenue: Sequelize.NUMBER,
-  totalCost: Sequelize.NUMBER,
-  totalProfit: Sequelize.NUMBER,
+  itemType: {
+    type: Sequelize.STRING,
+    field: "item_type",
+  },
+  salesChannel: {
+    type: Sequelize.ENUM("Online", "Offline"),
+    field: "sales_channel",
+  },
+  orderPriority: {
+    type: Sequelize.ENUM("L", "C", "H", "M"),
+    field: "order_priority",
+  },
+  orderDate: {
+    type: Sequelize.DATE,
+    field: "order_date",
+  },
+  shipDate: {
+    type: Sequelize.DATE,
+    field: "ship_date",
+  },
+  unitsSold: {
+    type: Sequelize.NUMBER,
+    field: "units_sold",
+  },
+  unitPrice: {
+    type: Sequelize.NUMBER,
+    field: "unit_price",
+  },
+  unitCost: {
+    type: Sequelize.NUMBER,
+    field: "unit_cost",
+  },
+  totalRevenue: {
+    type: Sequelize.NUMBER,
+    field: "total_revenue",
+  },
+  totalCost: {
+    type: Sequelize.NUMBER,
+    field: "total_cost",
+  },
+  totalProfit: {
+    type: Sequelize.NUMBER,
+    field: "total_profit",
+  },
 });
 
-SaleModel.belongsTo(RegionModel, { foreignKey: "region_id" });
-SaleModel.belongsTo(CountryModel, { foreignKey: "country_id" });
+SaleModel.belongsTo(RegionModel, { foreignKey: "regionId" });
+SaleModel.belongsTo(CountryModel, { foreignKey: "countryId" });

@@ -8,10 +8,11 @@ interface CountryModelAttributes {
 
 type CountryModelCreationAttributes = Omit<CountryModelAttributes, "id">;
 
-export type CountryModelViewAttributes = CountryModelAttributes;
-
-interface CountryModelInstance
-  extends Sequelize.Model<CountryModelAttributes, CountryModelCreationAttributes>,
+export interface CountryModelInstance
+  extends Sequelize.Model<
+      CountryModelAttributes,
+      CountryModelCreationAttributes
+    >,
     CountryModelAttributes {}
 
 export const CountryModel = db.define<CountryModelInstance>("country", {
