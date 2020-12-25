@@ -13,16 +13,16 @@ enum AllowedGroupByValues {
   ItemType = "item_type",
 }
 
-type SalesAttributesGetRequestQuery = { value: string; groupBy: string };
+type SalesAttributesGetRequestQuery = { value: string; group_by: string };
 type SalesAttributesGetRequest = Request<
   Record<string, unknown>,
   Record<string, unknown>,
   Record<string, unknown>,
   SalesAttributesGetRequestQuery
 >;
-type AggregationResult = { value: unknown; aggregator: unknown }[];
+type AggregationData = { aggregator: unknown; value: unknown };
 type SalesAggregatesGetResponse = Response<
-  { data: AggregationResult } & Record<string, unknown>
+  { data: AggregationData[] } & Record<string, unknown>
 >;
 
 SalesAggregatesRouter.get(
@@ -34,9 +34,9 @@ SalesAggregatesRouter.get(
     next: NextFunction
   ) => {
     try {
-      const { groupBy, value } = req.query;
+      const { group_by, value } = req.query;
 
-      switch (groupBy) {
+      switch (group_by) {
         case AllowedGroupByValues.Region: {
           const data = await aggregateByRegion(value);
           res.status(200).send({ data });
@@ -49,7 +49,7 @@ SalesAggregatesRouter.get(
         }
         default:
           throw new Error(
-            `'${groupBy}' is not allowed value for groupBy aggregation!`
+            `'${group_by}' is not allowed value for group_by aggregation!`
           );
       }
     } catch (e) {
@@ -64,15 +64,18 @@ enum AllowedRegionAggregations {
 const aggregateByRegion = async (value: string) => {
   if (value !== AllowedRegionAggregations.TotalProfit) {
     throw new Error(
-      `'${value}' is not allowed value for aggregation by Region!`
+      `'${value}' is not an allowed value for aggregation by Region!`
     );
   }
   const data = ((await SaleModel.findAll({
     attributes: [
       [
-        sequelize.fn(
-          "sum",
-          sequelize.col(SaleModelColumnNameToAttributeMap.totalProfit)
+        sequelize.cast(
+          sequelize.fn(
+            "sum",
+            sequelize.col(SaleModelColumnNameToAttributeMap.totalProfit)
+          ),
+          "float"
         ),
         "totalProfit",
       ],
@@ -93,15 +96,18 @@ enum AllowedItemTypeAggregations {
 const aggregateByItemType = async (value: string) => {
   if (value !== AllowedItemTypeAggregations.UnitsSold) {
     throw new Error(
-      `'${value}' is not allowed value for aggregation by Item Type!`
+      `'${value}' is not an allowed value for aggregation by Item Type!`
     );
   }
   const data = ((await SaleModel.findAll({
     attributes: [
       [
-        sequelize.fn(
-          "sum",
-          sequelize.col(SaleModelColumnNameToAttributeMap.unitsSold)
+        sequelize.cast(
+          sequelize.fn(
+            "sum",
+            sequelize.col(SaleModelColumnNameToAttributeMap.unitsSold)
+          ),
+          "float"
         ),
         "unitsSold",
       ],
