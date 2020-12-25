@@ -30,7 +30,7 @@ type SalesGetRequest = Request<
   SalesGetRequestQuery
 >;
 type SalesGetResponse = Response<
-  DataWithPagination<SalesViewAttributes[]> & { [key: string]: unknown }
+  DataWithPagination<SalesViewAttributes[]> & Record<string, unknown>
 >;
 
 SalesRouter.get(
@@ -56,11 +56,11 @@ SalesRouter.get(
         orderDate: data.orderDate,
         shipDate: data.shipDate,
         unitsSold: data.unitsSold,
-        unitPrice: data.unitPrice,
-        unitCost: data.unitCost,
-        totalRevenue: data.totalRevenue,
-        totalCost: data.totalCost,
-        totalProfit: data.totalProfit,
+        unitPrice: parseFloat((data.unitPrice as unknown) as string),
+        unitCost: parseFloat((data.unitCost as unknown) as string),
+        totalRevenue: parseFloat((data.totalRevenue as unknown) as string),
+        totalCost: parseFloat((data.totalCost as unknown) as string),
+        totalProfit: parseFloat((data.totalProfit as unknown) as string),
       }));
 
       const salesCount = await SaleModel.count();

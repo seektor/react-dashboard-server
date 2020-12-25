@@ -4,6 +4,7 @@ import { APP_CONFIG } from "./appConfig";
 import { db } from "./db/db";
 import errorMiddleware from "./middlewares/errorMiddleware";
 import AuthRouter from "./routes/authRoutes";
+import SalesAggregatesRouter from "./routes/salesAggregatesRoutes";
 import SalesRouter from "./routes/salesRoutes";
 
 class App {
@@ -32,6 +33,7 @@ class App {
   private initRouting(): void {
     this.app.use("/api", AuthRouter);
     this.app.use("/api", SalesRouter);
+    this.app.use("/api", SalesAggregatesRouter);
   }
 
   private initErrorHandling(): void {

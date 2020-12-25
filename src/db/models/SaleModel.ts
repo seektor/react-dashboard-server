@@ -20,6 +20,25 @@ export interface SaleModelAttributes {
   totalProfit: number;
 }
 
+export const SaleModelColumnNameToAttributeMap: {
+  [key in keyof SaleModelAttributes]: string;
+} = {
+  countryId: "country_id",
+  id: "id",
+  itemType: "item_type",
+  orderDate: "order_date",
+  orderPriority: "order_priority",
+  regionId: "region_id",
+  salesChannel: "sales_channel",
+  shipDate: "ship_date",
+  totalCost: "total_cost",
+  totalProfit: "total_profit",
+  totalRevenue: "total_revenue",
+  unitCost: "unit_cost",
+  unitPrice: "unit_price",
+  unitsSold: "units_sold",
+};
+
 type SaleModelCreationAttributes = Omit<SaleModelAttributes, "id">;
 
 export interface SaleModelInstance
@@ -34,7 +53,7 @@ export const SaleModel = db.define<SaleModelInstance>("sale", {
   },
   regionId: {
     type: Sequelize.UUID,
-    field: "region_id",
+    field: SaleModelColumnNameToAttributeMap.regionId,
     references: {
       key: "id",
       model: RegionModel,
@@ -42,7 +61,7 @@ export const SaleModel = db.define<SaleModelInstance>("sale", {
   },
   countryId: {
     type: Sequelize.UUID,
-    field: "country_id",
+    field: SaleModelColumnNameToAttributeMap.countryId,
     references: {
       key: "id",
       model: CountryModel,
@@ -50,47 +69,47 @@ export const SaleModel = db.define<SaleModelInstance>("sale", {
   },
   itemType: {
     type: Sequelize.STRING,
-    field: "item_type",
+    field: SaleModelColumnNameToAttributeMap.itemType,
   },
   salesChannel: {
     type: Sequelize.ENUM("Online", "Offline"),
-    field: "sales_channel",
+    field: SaleModelColumnNameToAttributeMap.salesChannel,
   },
   orderPriority: {
     type: Sequelize.ENUM("L", "C", "H", "M"),
-    field: "order_priority",
+    field: SaleModelColumnNameToAttributeMap.orderPriority,
   },
   orderDate: {
     type: Sequelize.DATE,
-    field: "order_date",
+    field: SaleModelColumnNameToAttributeMap.orderDate,
   },
   shipDate: {
     type: Sequelize.DATE,
-    field: "ship_date",
+    field: SaleModelColumnNameToAttributeMap.shipDate,
   },
   unitsSold: {
     type: Sequelize.NUMBER,
-    field: "units_sold",
+    field: SaleModelColumnNameToAttributeMap.unitsSold,
   },
   unitPrice: {
     type: Sequelize.NUMBER,
-    field: "unit_price",
+    field: SaleModelColumnNameToAttributeMap.unitPrice,
   },
   unitCost: {
     type: Sequelize.NUMBER,
-    field: "unit_cost",
+    field: SaleModelColumnNameToAttributeMap.unitCost,
   },
   totalRevenue: {
     type: Sequelize.NUMBER,
-    field: "total_revenue",
+    field: SaleModelColumnNameToAttributeMap.totalRevenue,
   },
   totalCost: {
     type: Sequelize.NUMBER,
-    field: "total_cost",
+    field: SaleModelColumnNameToAttributeMap.totalCost,
   },
   totalProfit: {
     type: Sequelize.NUMBER,
-    field: "total_profit",
+    field: SaleModelColumnNameToAttributeMap.totalProfit,
   },
 });
 
