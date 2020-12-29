@@ -1,14 +1,20 @@
 import cors from "cors";
 import express from "express";
+import { Server as HttpServer } from "http";
 import { APP_CONFIG } from "./appConfig";
 import { db } from "./db/db";
 import errorMiddleware from "./middlewares/errorMiddleware";
 import AuthRouter from "./routes/authRoutes";
 import SalesAggregatesRouter from "./routes/salesAggregatesRoutes";
+import SalesMetadataRouter from "./routes/salesMetadataRoutes";
 import SalesRouter from "./routes/salesRoutes";
+import TodosRouter from "./routes/todosRoutes";
+import SocketsService from "./services/Sockets.service";
 
 class App {
-  public app: express.Application;
+  private app: express.Application;
+  private server!: HttpServer;
+  private socketsService!: SocketsService;
 
   constructor() {
     this.app = express();
@@ -20,9 +26,13 @@ class App {
   }
 
   public listen(): void {
-    this.app.listen(APP_CONFIG.SERVER_PORT, () => {
+    if (this.server) {
+      return;
+    }
+    this.server = this.app.listen(APP_CONFIG.SERVER_PORT, () => {
       console.log(`Server Started at Port ${APP_CONFIG.SERVER_PORT}.`);
     });
+    this.initSocketsService();
   }
 
   private initBaseMiddlewares(): void {
@@ -34,6 +44,12 @@ class App {
     this.app.use("/api", AuthRouter);
     this.app.use("/api", SalesRouter);
     this.app.use("/api", SalesAggregatesRouter);
+    this.app.use("/api", SalesMetadataRouter);
+    this.app.use("/api", TodosRouter);
+  }
+
+  private initSocketsService(): void {
+    this.socketsService = SocketsService.init(this.server);
   }
 
   private initErrorHandling(): void {

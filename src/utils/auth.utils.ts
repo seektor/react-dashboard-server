@@ -12,13 +12,13 @@ export const validateUser = async (
   });
 
   if (!user) {
-    throw new Error("User does not exist.");
+    throw new Error("User does not exist!");
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    throw new Error("The password does not match.");
+    throw new Error("The password does not match!");
   }
   const userView: UserModelViewAttributes = {
     id: user.id,

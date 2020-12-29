@@ -5,6 +5,7 @@ import {
   SaleModel,
   SaleModelColumnNameToAttributeMap,
 } from "../db/models/SaleModel";
+import authMiddleware from "../middlewares/authMiddleware";
 
 const SalesAggregatesRouter = express.Router();
 
@@ -27,7 +28,7 @@ type SalesAggregatesGetResponse = Response<
 
 SalesAggregatesRouter.get(
   "/salesAggregates",
-  // authMiddleware,
+  authMiddleware,
   async (
     req: SalesAttributesGetRequest,
     res: SalesAggregatesGetResponse,
@@ -52,8 +53,8 @@ SalesAggregatesRouter.get(
             `'${group_by}' is not allowed value for group_by aggregation!`
           );
       }
-    } catch (e) {
-      next(e);
+    } catch (error) {
+      next(error);
     }
   }
 );

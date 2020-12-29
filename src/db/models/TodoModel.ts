@@ -2,24 +2,22 @@ import * as Sequelize from "sequelize";
 import { db } from "../db";
 import { UserModel, UserModelViewAttributes } from "./UserModel";
 
-interface ToastModelAttributes {
+interface TodoModelAttributes {
   id: number;
   userId: number;
   title: string;
   description: string;
 }
 
-type ToastModelCreationAttributes = Omit<ToastModelAttributes, "id">;
-
-export type ToastModelViewAttributes = Omit<ToastModelAttributes, "userId">;
+type TodoModelCreationAttributes = Omit<TodoModelAttributes, "id">;
 
 interface ToastModelInstance
-  extends Sequelize.Model<ToastModelAttributes, ToastModelCreationAttributes>,
-    ToastModelAttributes {
+  extends Sequelize.Model<TodoModelAttributes, TodoModelCreationAttributes>,
+    TodoModelAttributes {
   user?: UserModelViewAttributes;
 }
 
-export const ToastModel = db.define<ToastModelInstance>("toast", {
+export const TodoModel = db.define<ToastModelInstance>("todo", {
   id: {
     type: Sequelize.UUID,
     autoIncrement: true,
@@ -43,4 +41,4 @@ export const ToastModel = db.define<ToastModelInstance>("toast", {
   },
 });
 
-ToastModel.belongsTo(UserModel, { foreignKey: "userId" });
+TodoModel.belongsTo(UserModel, { foreignKey: "userId" });

@@ -6,6 +6,7 @@ import {
   SaleModelAttributes,
   SaleModelInstance,
 } from "../db/models/SaleModel";
+import authMiddleware from "../middlewares/authMiddleware";
 import { DataWithPagination } from "../types/DataWithPagination";
 
 const SalesRouter = express.Router();
@@ -35,7 +36,7 @@ type SalesGetResponse = Response<
 
 SalesRouter.get(
   "/sales",
-  // authMiddleware,
+  authMiddleware,
   async (req: SalesGetRequest, res: SalesGetResponse, next: NextFunction) => {
     try {
       const pageIndex = parseInt(req.query.pageIndex) || 0;

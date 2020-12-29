@@ -1,95 +1,99 @@
 import bcrypt from "bcryptjs";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { TokenModel } from "../db/models/TokenModel";
 import { UserModel, UserModelViewAttributes } from "../db/models/UserModel";
+import HttpException from "../exceptions/HttpException";
 import authMiddleware from "../middlewares/authMiddleware";
 import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
 import { generateAuthToken, validateUser } from "../utils/auth.utils";
 
 const AuthRouter = express.Router();
 
+type RegisterRequestBody = { userName: string; password: string };
 type RegisterRequest = Request<
   Record<string, unknown>,
   Record<string, unknown>,
-  { userName?: string; password?: string }
+  RegisterRequestBody
 >;
-type RegisterResponse = Response<{ registerError?: string }>;
 
 AuthRouter.post(
   "/register",
-  async (req: RegisterRequest, res: RegisterResponse) => {
+  async (req: RegisterRequest, res: Response, next: NextFunction) => {
     try {
       const { userName, password } = req.body;
       if (!userName || !password) {
-        throw new Error("Invalid field.");
+        throw new HttpException(400, "UserName and Password cannot be empty!");
       }
 
       const duplicates = await UserModel.findAll({ where: { userName } });
       if (duplicates.length > 0) {
-        throw new Error("User with this name already exists.");
+        throw new HttpException(400, "User with this name already exists!");
       }
 
       const hashedPassword = await bcrypt.hash(password, 8);
       await UserModel.create({ password: hashedPassword, userName: userName });
       return res.status(201).send();
-    } catch (e) {
-      return res.status(400).send({
-        registerError:
-          e.message || "Error while registering... Try again later.",
-      });
+    } catch (error) {
+      next(error);
     }
   }
 );
 
+type LoginRequestBody = { userName: string; password: string };
 type LoginRequest = Request<
   Record<string, unknown>,
   Record<string, unknown>,
-  { userName?: string; password?: string }
+  LoginRequestBody
 >;
 type LoginResponse = Response<{
-  userName?: string;
-  accessToken?: string;
-  loginError?: string;
+  userName: string;
+  accessToken: string;
 }>;
 
-AuthRouter.post("/login", async (req: LoginRequest, res: LoginResponse) => {
-  try {
-    const { userName, password } = req.body;
-    if (!userName || !password) {
-      return res.status(400).send({
-        loginError: "Invalid field.",
-      });
-    }
-
-    let user: UserModelViewAttributes;
+AuthRouter.post(
+  "/login",
+  async (req: LoginRequest, res: LoginResponse, next: NextFunction) => {
     try {
-      user = await validateUser(userName, password);
-    } catch (e) {
-      return res.status(400).send({
-        loginError: e.message,
+      const { userName, password } = req.body;
+      if (!userName || !password) {
+        throw new HttpException(400, "UserName and Password cannot be empty!");
+      }
+
+      let user: UserModelViewAttributes;
+      try {
+        user = await validateUser(userName, password);
+      } catch (e) {
+        throw new HttpException(400, e.message);
+      }
+
+      let tokenInstance;
+      const existingToken = await TokenModel.findOne({
+        where: { userId: user.id },
       });
+      if (existingToken) {
+        tokenInstance = existingToken;
+      } else {
+        const token = await generateAuthToken(user);
+        tokenInstance = await TokenModel.create({
+          accessToken: token,
+          userId: user.id,
+        });
+      }
+
+      const accessToken = tokenInstance.accessToken;
+      res
+        .status(200)
+        .send({ accessToken: accessToken, userName: user.userName });
+    } catch (error) {
+      next(error);
     }
-
-    const token = await generateAuthToken(user);
-    const tokenInstance = await TokenModel.create({
-      accessToken: token,
-      userId: user.id,
-    });
-    const accessToken = tokenInstance.accessToken;
-    res.status(200).send({ accessToken: accessToken, userName: user.userName });
-  } catch {
-    return res.status(400).send({
-      loginError: "Error while logging in... Try again later.",
-    });
   }
-});
-
-type LogoutResponse = Response<{ logoutError?: string }>;
+);
 
 AuthRouter.post(
   "/logout",
   authMiddleware,
-  async (req: AuthenticatedRequest, res: LogoutResponse) => {
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
       const { accessToken, user } = req.body;
       await TokenModel.destroy({
@@ -98,11 +102,9 @@ AuthRouter.post(
           accessToken,
         },
       });
-      res.send();
-    } catch {
-      return res.status(400).send({
-        logoutError: "Error while logging out... Try again later.",
-      });
+      res.status(200).send();
+    } catch (error) {
+      next(error);
     }
   }
 );

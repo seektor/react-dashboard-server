@@ -1,20 +1,20 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { APP_CONFIG } from "../appConfig";
 import { TokenModel } from "../db/models/TokenModel";
 import { UserModel } from "../db/models/UserModel";
-import { AuthenticatedRequest } from "../types/AuthenticatedRequest";
+import HttpException from "../exceptions/HttpException";
 import { JWTPayload } from "../types/JWTPayload";
 
 const authMiddleware = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const authorizationHeader = req.headers.authorization;
     if (!authorizationHeader) {
-      throw new Error("Missing Authorization header.");
+      throw new HttpException(401, "Missing Authorization header!");
     }
     const token = authorizationHeader;
     const decoded = (jwt.verify(
@@ -27,21 +27,18 @@ const authMiddleware = async (
       include: [UserModel],
     });
     if (!dbTokenEntry) {
-      throw new Error("User not authenticated.");
+      throw new HttpException(401, "User not authenticated!");
     }
 
     const user = dbTokenEntry.user;
-
     if (!user) {
-      throw new Error("No user associated with the token.");
+      throw new HttpException(401, "No user associated with the token!");
     }
     req.body.user = user;
     req.body.accessToken = token;
     next();
   } catch (error) {
-    res.status(400).send({
-      auth_error: error.message,
-    });
+    next(error);
   }
 };
 
